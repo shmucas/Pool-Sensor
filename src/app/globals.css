@@ -1,67 +1,219 @@
 @import "tailwindcss";
 
+/*
+  Pool Sensor — instrument-panel dark theme.
+  Deep navy foundation, cyan/teal telemetry accents, amber/red for status only.
+  Forced dark: this is a monitoring panel, it reads best on a dark ground.
+*/
 :root {
-  --bg: #f2f6f5;
-  --panel: #ffffff;
-  --ink: #0e2426;
-  --ink-soft: #3c5658;
-  --line: #c9d9d7;
-  --accent: #0d6e6a;
-  --accent-soft: #e4f2f0;
-  --warn: #a9720c;
-  --warn-soft: #f7e9dc;
-  --critical: #b5432f;
-  --critical-soft: #fbe6e1;
+  --bg: #0b132b;
+  --bg-2: #0e1631;
+  --panel: #151e3d;
+  --glass: rgba(31, 43, 77, 0.45);
+  --glass-2: rgba(31, 43, 77, 0.7);
+  --ink: #eaf1ff;
+  --ink-soft: #9db0d4;
+  --line: rgba(122, 162, 222, 0.16);
+  --accent: #64dfda;
+  --accent-2: #4ea8de;
+  --accent-soft: rgba(100, 223, 218, 0.12);
+  --warn: #f4b860;
+  --warn-soft: rgba(244, 184, 96, 0.14);
+  --critical: #f56c7e;
+  --critical-soft: rgba(245, 108, 126, 0.14);
+  --ok: #57d99a;
+  --ok-soft: rgba(87, 217, 154, 0.14);
+  --copper: #e0965a;
+  --amber: #e7c46a;
+  --grid: rgba(100, 223, 218, 0.045);
+
+  /* font-family aliases kept so the login panel + lock dial keep resolving */
+  --font-geist-sans: var(--font-sans);
+  --font-geist-mono: var(--font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0a1716;
-    --panel: #0f2321;
-    --ink: #e7f2f0;
-    --ink-soft: #9db8b5;
-    --line: #1e3d3a;
-    --accent: #5fd4c8;
-    --accent-soft: #123331;
-    --warn: #e2b25a;
-    --warn-soft: #2a1d12;
-    --critical: #e2705a;
-    --critical-soft: #331410;
-  }
+* {
+  box-sizing: border-box;
 }
 
-:root[data-theme="dark"] {
-  --bg: #0a1716;
-  --panel: #0f2321;
-  --ink: #e7f2f0;
-  --ink-soft: #9db8b5;
-  --line: #1e3d3a;
-  --accent: #5fd4c8;
-  --accent-soft: #123331;
-  --warn: #e2b25a;
-  --warn-soft: #2a1d12;
-  --critical: #e2705a;
-  --critical-soft: #331410;
-}
-
-:root[data-theme="light"] {
-  --bg: #f2f6f5;
-  --panel: #ffffff;
-  --ink: #0e2426;
-  --ink-soft: #3c5658;
-  --line: #c9d9d7;
-  --accent: #0d6e6a;
-  --accent-soft: #e4f2f0;
-  --warn: #a9720c;
-  --warn-soft: #f7e9dc;
-  --critical: #b5432f;
-  --critical-soft: #fbe6e1;
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--bg);
+  min-height: 100%;
+  background:
+    radial-gradient(1100px 600px at 12% -8%, rgba(78, 168, 222, 0.14), transparent 60%),
+    radial-gradient(900px 520px at 92% 4%, rgba(100, 223, 218, 0.1), transparent 62%),
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 34px 34px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 34px 34px,
+    var(--bg);
   color: var(--ink);
-  font-family: ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent);
+  color: #06111f;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Frosted-glass card. The signature surface of the whole panel. */
+.glass {
+  background: linear-gradient(180deg, var(--glass), var(--glass-2));
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 20px 48px -30px rgba(0, 0, 0, 0.8);
+}
+
+/* Thin accent hairline that sits at the top of a live telemetry card. */
+.card-rail {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(90deg, transparent, var(--rail, var(--accent)), transparent);
+  opacity: 0.7;
+}
+
+/* Status dot with a soft halo. */
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--dot, var(--ink-soft));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--dot, var(--ink-soft)) 24%, transparent);
+}
+
+.status-dot.live {
+  animation: dot-pulse 2s ease-in-out infinite;
+}
+
+@keyframes dot-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot) 30%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 7px color-mix(in srgb, var(--dot) 6%, transparent);
+  }
+}
+
+/* Skeleton shimmer for the waiting-for-Pi empty state. */
+.skeleton {
+  background: linear-gradient(
+    100deg,
+    rgba(157, 176, 212, 0.06) 30%,
+    rgba(157, 176, 212, 0.14) 50%,
+    rgba(157, 176, 212, 0.06) 70%
+  );
+  background-size: 220% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 140% 0; }
+  100% { background-position: -40% 0; }
+}
+
+.breathe {
+  animation: breathe 3.2s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* Tabular figures for every readout. */
+.tnum {
+  font-family: var(--font-mono), ui-monospace, "SF Mono", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Ported SVG helper classes (wiring schematic + isometric case render) ---- */
+.schematic-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+}
+
+.schematic-wrap svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.sensor-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 12px;
+  fill: var(--ink);
+}
+
+.sensor-sub {
+  font-family: var(--font-sans), sans-serif;
+  font-size: 10px;
+  fill: var(--ink-soft);
+}
+
+.pin-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  fill: var(--ink-soft);
+}
+
+.wire-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  fill: var(--ink-soft);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin-top: 14px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.legend-swatch {
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.notebox {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent-soft);
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+.notebox b {
+  display: block;
+  color: var(--ink);
+  margin-bottom: 3px;
 }
 
 .login-glow {
@@ -71,6 +223,7 @@ body {
   background: radial-gradient(560px circle at 50% 32%, var(--accent-soft), transparent 70%);
 }
 
+/* Breathing halo behind the login lock dial. */
 .dial-glow {
   border-radius: 9999px;
   background: radial-gradient(circle, var(--accent-soft), transparent 70%);
@@ -78,20 +231,15 @@ body {
 }
 
 @keyframes dial-breathe {
-  0%,
-  100% {
-    opacity: 0.5;
-    transform: scale(0.94);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.04);
-  }
+  0%, 100% { opacity: 0.6; transform: scale(0.94); }
+  50% { opacity: 1; transform: scale(1.04); }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .status-dot.live,
+  .skeleton,
+  .breathe,
   .dial-glow {
     animation: none;
-    opacity: 0.85;
   }
 }

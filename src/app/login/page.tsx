@@ -7,8 +7,8 @@ export default function LoginPage() {
     <div className="relative min-h-screen flex items-center justify-center px-6 py-16 overflow-hidden">
       <div className="login-glow" />
       <div
-        className="relative w-full max-w-[400px] rounded-lg border p-9 flex flex-col items-center gap-7 text-center"
-        style={{ borderColor: "var(--line)", background: "var(--panel)", boxShadow: "0 24px 60px -32px rgba(13, 110, 106, 0.35)" }}
+        className="glass relative w-full max-w-[400px] p-9 flex flex-col items-center gap-7 text-center"
+        style={{ borderRadius: 20 }}
       >
         <LockDial />
 
