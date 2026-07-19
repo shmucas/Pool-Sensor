@@ -1,8 +1,8 @@
-import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
 
 /**
- * Anon-key client for the dashboard's read-only queries.
- * Relies on the "anon can read readings" RLS policy in supabase/schema.sql.
+ * Browser client for Client Components. Persists the auth session in cookies
+ * so the server clients (proxy, Server Components) can read the same session.
  */
 export function supabaseBrowserClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -12,7 +12,5 @@ export function supabaseBrowserClient() {
     throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY");
   }
 
-  return createClient(url, anonKey, {
-    auth: { persistSession: false },
-  });
+  return createBrowserClient(url, anonKey);
 }

@@ -11,13 +11,16 @@ create table if not exists readings (
 create index if not exists readings_recorded_at_idx on readings (recorded_at desc);
 
 -- Row Level Security: table is written only via the service-role key from the
--- Next.js API route, and read only via the anon key for the dashboard.
+-- Next.js API route. Reads require a signed-in session belonging to the
+-- single allowed owner - the anon key alone grants no access.
 alter table readings enable row level security;
 
-create policy "anon can read readings"
+drop policy if exists "anon can read readings" on readings;
+
+create policy "owner can read readings"
   on readings for select
-  to anon
-  using (true);
+  to authenticated
+  using ((auth.jwt() ->> 'email') = 'lvcaspf@gmail.com');
 
 -- No insert/update/delete policy for anon or authenticated: writes only via
 -- the service-role key, which bypasses RLS by design.

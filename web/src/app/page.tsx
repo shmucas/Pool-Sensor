@@ -1,4 +1,5 @@
-import { supabaseBrowserClient } from "@/lib/supabase-browser";
+import { supabaseServerClient } from "@/lib/supabase-server";
+import { SignOutButton } from "@/components/sign-out-button";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,7 @@ type Reading = {
 };
 
 async function getReadings(): Promise<Reading[]> {
-  const supabase = supabaseBrowserClient();
+  const supabase = await supabaseServerClient();
   const { data, error } = await supabase
     .from("readings")
     .select("*")
@@ -87,9 +88,12 @@ export default async function Home() {
           />
           Pool Sensor
         </div>
-        <h1 className="text-3xl font-semibold" style={{ fontFamily: "ui-monospace, monospace" }}>
-          Live readings
-        </h1>
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="text-3xl font-semibold" style={{ fontFamily: "ui-monospace, monospace" }}>
+            Live readings
+          </h1>
+          <SignOutButton />
+        </div>
         <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
           MVP scope: monitor only. These numbers exist to be checked against manual readings,
           not acted on automatically.
