@@ -45,21 +45,28 @@ const STAGES: Stage[] = [
   },
   {
     id: "05",
+    title: "Add heater monitoring",
+    verify: "verify vs. manual check",
+    body: "Second DS18B20 on the heater outlet (shares the 1-Wire bus) plus a clamp-on current transformer on the heater feed into the ADC's spare A3 channel. Run shielded cable back to the enclosure. Confirm outlet temp climbs when heating and the firing flag flips as the heater cycles.",
+    state: "todo",
+  },
+  {
+    id: "06",
     title: "Ship to the dashboard",
     verify: "verify end-to-end",
-    body: "Next.js API route + Supabase table; Pi POSTs all four readings on an interval; this dashboard shows live + historical values.",
+    body: "Next.js API route + Supabase table; Pi POSTs every reading on an interval; this dashboard shows live + historical values.",
     state: "todo",
   },
   {
     id: "—",
-    title: "Equipment sensing, alerts, automation",
-    body: "Current clamps for pump on/off state, alerting, and control — intentionally out of scope until the sensor data above is proven accurate.",
+    title: "Pump-motor sensing, alerts, automation",
+    body: "Current clamps on the pump motor for run-state, alerting, and control — intentionally out of scope until the sensor data above is proven accurate.",
     state: "deferred",
   },
 ];
 
 const PIPELINE = [
-  { title: "Sensors", zone: "pad", desc: "DS18B20 temp probe on 1-Wire, plus pressure, pH and ORP through an ADS1115 ADC on I²C." },
+  { title: "Sensors", zone: "pad", desc: "Two DS18B20 temp probes on 1-Wire (pool return + heater outlet), plus pressure, pH, ORP and a heater current clamp through an ADS1115 ADC on I²C." },
   { title: "Raspberry Pi 4B", zone: "pad", desc: "Python loop reads all four sensors on an interval, timestamps, and POSTs JSON over WiFi. The only network-facing device." },
   { title: "Next.js API route", zone: "cloud", desc: "Vercel-hosted. Validates the payload and writes one row per poll." },
   { title: "Supabase Postgres", zone: "cloud", desc: "Time-series readings table, one row per poll." },
@@ -114,8 +121,11 @@ const EQUIPMENT: { img: string; alt: string; name: string; desc: string; taps: T
     img: "/equipment/heater.jpg",
     alt: "Jandy JXI400NK pool and spa heater label",
     name: "Jandy JXI400NK heater",
-    desc: "Located outside the pump enclosure — out of scope for this build. Not sensed or wired in the MVP.",
-    taps: [{ text: "Out of scope", tone: "none" }],
+    desc: "Outside the pump enclosure. Now in the MVP: an outlet-line temp probe and a clamp-on current transformer on its feed report heating and firing state back to the Pi over a shielded run.",
+    taps: [
+      { text: "Outlet temp probe", tone: "ph" },
+      { text: "Firing state (CT clamp)", tone: "power" },
+    ],
   },
 ];
 
@@ -138,6 +148,10 @@ const SHOPPING = [
   { item: "0-100psi pressure transducer, 0.5-4.5V", forWhat: "Filter pressure", stage: "02", price: "$25-35" },
   { item: "DFRobot Gravity pH Sensor Kit (SEN0161-V2)", forWhat: "pH", stage: "03", price: "$60-70" },
   { item: "DFRobot Gravity ORP Sensor Kit (SEN0165)", forWhat: "ORP", stage: "04", price: "$55-90" },
+  { item: "DS18B20 waterproof probe #2 (heater outlet)", forWhat: "Heater outlet temp", stage: "05", price: "$8-10" },
+  { item: "SCT-013-030 clamp-on current transformer", forWhat: "Heater firing state", stage: "05", price: "$10-12" },
+  { item: "Burden resistor + bias network (CT into ADC)", forWhat: "Heater firing state", stage: "05", price: "~$3" },
+  { item: "Shielded 2-conductor cable run + extra gland", forWhat: "Heater sensor run", stage: "05", price: "$8-12" },
   { item: "Flow-cell fittings, glands, jumpers, calibration solutions", forWhat: "Assembly & calibration", stage: "—", price: "$30-40" },
 ];
 
@@ -147,9 +161,8 @@ export function RoadmapView() {
       <div className="flex flex-col gap-2">
         <h2 className="text-2xl font-semibold tracking-tight">Build roadmap</h2>
         <p className="text-sm max-w-2xl" style={{ color: "var(--ink-soft)" }}>
-          A dad-and-son project, built one sensor at a time. Each stage is checked against an
-          independent manual reading before moving to the next — no automation until the numbers
-          are proven.
+          Built one sensor at a time. Each stage is checked against an independent manual reading
+          before moving to the next — no automation until the numbers are proven.
         </p>
       </div>
 
@@ -158,17 +171,18 @@ export function RoadmapView() {
       <SectionDiagram
         eyebrow="Wiring"
         title="Sensors to the GPIO header"
-        sub="All four sensors share two buses off the 40-pin header — a single GPIO for 1-Wire, and I²C for the ADS1115, which fans out to three analog channels."
+        sub="Everything shares two buses off the 40-pin header — one GPIO for the 1-Wire temp probes (multidrop), and I²C for the ADS1115, which fans out to four analog channels including the heater current clamp on the spare A3."
         svg={WIRING_SVG}
         legend={[
-          { c: "var(--copper)", t: "1-Wire digital (temp)" },
+          { c: "var(--copper)", t: "1-Wire digital (temp probes)" },
           { c: "var(--accent)", t: "I²C bus (Pi ↔ ADC)" },
-          { c: "var(--amber)", t: "Analog (ADC ↔ probes)" },
+          { c: "var(--amber)", t: "Analog (ADC ↔ probes / clamp)" },
+          { c: "var(--warn)", t: "Heater sensors (shielded run)" },
           { c: "var(--ink-soft)", t: "Shared power / ground" },
         ]}
         note={{
-          title: "Flow cell note",
-          body: "The pH and ORP probes both need moving water. Tap a small PVC tee off the return line near the IntelliChlor so both electrode tips stay wetted, and keep the BNC connectors inside the enclosure.",
+          title: "Heater sensing reuses what's already there",
+          body: "The heater outlet probe is a second DS18B20 on the same 1-Wire bus — no new GPIO. The current clamp (SCT-013) feeds the ADC's spare A3 channel through a burden + bias network. Both sit at the heater outside the enclosure, so they share one shielded run back through a new gland. The pH and ORP probes still tee off the return line near the IntelliChlor so their tips stay wetted.",
         }}
       />
       <SectionDiagram
@@ -180,11 +194,12 @@ export function RoadmapView() {
           { c: "var(--copper)", t: "1-Wire lead to gland" },
           { c: "var(--accent)", t: "I²C bus (Pi ↔ ADC)" },
           { c: "var(--amber)", t: "Analog leads to glands" },
+          { c: "var(--warn)", t: "Heater run gland" },
           { c: "var(--ink-soft)", t: "Power in" },
         ]}
         note={{
           title: "This is a mockup, not a photo",
-          body: "There's no physical case yet, so this render is for planning gland positions and clearance. Swap it for a real photo once the case is built.",
+          body: "There's no physical case yet, so this render is for planning gland positions and clearance — now including a sixth gland for the heater's shielded run. Swap it for a real photo once the case is built.",
         }}
       />
       <SectionEquipment />
@@ -419,10 +434,10 @@ function SectionShopping() {
           <tfoot>
             <tr style={{ borderTop: "1px solid var(--line)" }}>
               <td className="px-4 py-3 font-medium" colSpan={3}>
-                Total — MVP, all four sensors
+                Total — MVP, core sensors + heater monitoring
               </td>
               <td className="px-4 py-3 text-right font-semibold tnum" style={{ color: "var(--accent)" }}>
-                ~$280-385
+                ~$310-425
               </td>
             </tr>
           </tfoot>

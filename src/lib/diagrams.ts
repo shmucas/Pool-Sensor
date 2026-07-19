@@ -2,7 +2,7 @@
 // Rendered via dangerouslySetInnerHTML in the roadmap view; styling comes from
 // globals.css (.sensor-label, .pin-label, .wire-label) and theme CSS vars.
 
-export const WIRING_SVG = `<svg viewBox="0 0 1080 460" width="1080" height="460" role="img" aria-label="Wiring diagram from Raspberry Pi GPIO header to DS18B20, ADS1115, pressure transducer, pH probe and ORP probe">
+export const WIRING_SVG = `<svg viewBox="0 0 1080 460" width="1080" height="460" role="img" aria-label="Wiring diagram from Raspberry Pi GPIO header to two DS18B20 temp probes, ADS1115, pressure transducer, pH probe, ORP probe and heater current clamp">
             <rect x="20" y="150" width="150" height="180" rx="4" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
             <text x="95" y="140" text-anchor="middle" class="sensor-label">Raspberry Pi 4B</text>
             <text x="95" y="175" text-anchor="middle" class="pin-label">3V3 · 1</text>
@@ -25,7 +25,7 @@ export const WIRING_SVG = `<svg viewBox="0 0 1080 460" width="1080" height="460"
             <text x="595" y="205" text-anchor="middle" class="pin-label">A0 →</text>
             <text x="595" y="235" text-anchor="middle" class="pin-label">A1 →</text>
             <text x="595" y="265" text-anchor="middle" class="pin-label">A2 →</text>
-            <text x="595" y="295" text-anchor="middle" class="pin-label">A3 (spare)</text>
+            <text x="595" y="295" text-anchor="middle" class="pin-label">A3 →</text>
             <path d="M670,205 H800" stroke="var(--amber)" stroke-width="2" fill="none"/>
             <rect x="800" y="180" width="180" height="50" rx="4" fill="none" stroke="var(--line)" stroke-width="1.5"/>
             <text x="890" y="200" text-anchor="middle" class="sensor-label">Pressure transducer</text>
@@ -39,6 +39,15 @@ export const WIRING_SVG = `<svg viewBox="0 0 1080 460" width="1080" height="460"
             <text x="890" y="340" text-anchor="middle" class="sensor-label">ORP probe</text>
             <text x="890" y="356" text-anchor="middle" class="sensor-sub">Gravity SEN0165 · flow cell</text>
             <path d="M670,265 V335 H800" stroke="var(--amber)" stroke-width="2" fill="none"/>
+            <path d="M375,280 V332" stroke="var(--copper)" stroke-width="2" fill="none"/>
+            <text x="455" y="308" text-anchor="middle" class="wire-label" fill="var(--copper)">1-Wire multidrop</text>
+            <rect x="300" y="332" width="180" height="56" rx="4" fill="none" stroke="var(--warn)" stroke-width="1.5"/>
+            <text x="390" y="356" text-anchor="middle" class="sensor-label">DS18B20 #2</text>
+            <text x="390" y="373" text-anchor="middle" class="sensor-sub">temp · heater outlet</text>
+            <path d="M670,295 H745 V414 H800" stroke="var(--amber)" stroke-width="2" fill="none"/>
+            <rect x="800" y="388" width="180" height="54" rx="4" fill="none" stroke="var(--warn)" stroke-width="1.5"/>
+            <text x="890" y="410" text-anchor="middle" class="sensor-label">Heater CT clamp</text>
+            <text x="890" y="427" text-anchor="middle" class="sensor-sub">SCT-013 · heater feed · firing state</text>
             <path d="M170,175 H1000" stroke="var(--ink-soft)" stroke-width="1" stroke-dasharray="3 4" fill="none"/>
             <text x="1000" y="168" text-anchor="end" class="wire-label">shared 3V3/5V + GND rail to all boards</text>
           </svg>`;
@@ -132,6 +141,9 @@ export const CASE_SVG = `<svg viewBox="0 0 1080 520" width="1080" height="520" r
             <path d="M615,278 C610,305 610,318 618,328" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" opacity=".85"/>
             <ellipse cx="392" cy="282" rx="9" ry="6" fill="url(#glandGrad)" stroke="var(--ink)" stroke-width="1"/>
             <text x="310" y="292" text-anchor="end" class="pin-label">Gland 5 · 5V power in</text>
+            <path d="M618,285 C655,300 678,306 700,311" fill="none" stroke="var(--warn)" stroke-width="2" stroke-linecap="round" opacity=".9"/>
+            <ellipse cx="700" cy="311" rx="9" ry="6" fill="url(#glandGrad)" stroke="var(--warn)" stroke-width="1.3"/>
+            <text x="722" y="330" class="pin-label">Gland 6 · Heater run (shielded)</text>
             <rect x="500" y="352" width="60" height="18" rx="3" fill="none" stroke="var(--line)" stroke-width="1.5" transform="skewX(0)"/>
             <text x="530" y="380" text-anchor="middle" class="pin-label">Vent + desiccant</text>
           </svg>`;

@@ -5,8 +5,14 @@ create table if not exists readings (
   temp_f double precision,
   pressure_psi double precision,
   ph double precision,
-  orp_mv double precision
+  orp_mv double precision,
+  heater_out_f double precision,
+  heater_on boolean
 );
+
+-- Heater monitoring columns. Safe to run against an existing table.
+alter table readings add column if not exists heater_out_f double precision;
+alter table readings add column if not exists heater_on boolean;
 
 create index if not exists readings_recorded_at_idx on readings (recorded_at desc);
 

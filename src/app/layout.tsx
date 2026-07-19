@@ -13,7 +13,7 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pool Sensor",
+  title: "Ferreira Pool Sensor",
   description: "Live pool telemetry — temperature, pressure, pH, and ORP.",
 };
 

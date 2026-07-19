@@ -45,16 +45,23 @@ export function LiveReadings({ readings, status, error }: Props) {
         <WaitingState />
       ) : (
         latest && (
-          <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {SENSORS.map((sensor) => (
-              <TelemetryCard
-                key={sensor.key}
-                sensor={sensor}
-                value={latest[sensor.key]}
-                series={chronological.map((r) => r[sensor.key])}
-              />
-            ))}
-          </section>
+          <div className="flex flex-col gap-4">
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {SENSORS.map((sensor) => (
+                <TelemetryCard
+                  key={sensor.key}
+                  sensor={sensor}
+                  value={latest[sensor.key]}
+                  series={chronological.map((r) => r[sensor.key])}
+                />
+              ))}
+            </section>
+            <HeaterCard
+              on={latest.heater_on}
+              outletF={latest.heater_out_f}
+              series={chronological.map((r) => r.heater_out_f)}
+            />
+          </div>
         )
       )}
 
@@ -143,6 +150,73 @@ function formatSplit(value: number | null, sensor: Sensor) {
   );
 }
 
+function HeaterCard({
+  on,
+  outletF,
+  series,
+}: {
+  on: boolean | null;
+  outletF: number | null;
+  series: (number | null)[];
+}) {
+  const known = on !== null && on !== undefined;
+  const stateColor = !known ? "var(--ink-soft)" : on ? "var(--ok)" : "var(--ink-soft)";
+  const stateLabel = !known ? "Unknown" : on ? "Firing" : "Idle";
+
+  return (
+    <div className="glass relative overflow-hidden p-5 flex flex-col md:flex-row md:items-center gap-5">
+      <span className="card-rail" style={{ ["--rail" as string]: "var(--warn)" }} aria-hidden="true" />
+
+      <div className="flex flex-col gap-1 md:w-48">
+        <span className="text-[11px] uppercase tracking-[0.14em]" style={{ color: "var(--ink-soft)" }}>
+          Heater
+        </span>
+        <div className="flex items-center gap-2 mt-1">
+          <span
+            className={`status-dot ${on ? "live" : ""}`}
+            style={{ ["--dot" as string]: stateColor }}
+            aria-hidden="true"
+          />
+          <span className="text-lg font-semibold" style={{ color: stateColor }}>
+            {stateLabel}
+          </span>
+        </div>
+        <span className="text-[11px]" style={{ color: "var(--ink-soft)", opacity: 0.75 }}>
+          Firing state · current clamp
+        </span>
+      </div>
+
+      <div
+        className="flex flex-col gap-0.5 md:border-l md:pl-5"
+        style={{ borderColor: "var(--line)" }}
+      >
+        <span className="text-[11px] uppercase tracking-[0.14em]" style={{ color: "var(--ink-soft)" }}>
+          Outlet temp
+        </span>
+        <div className="tnum text-4xl font-semibold leading-none mt-1">
+          {outletF === null || outletF === undefined || Number.isNaN(outletF) ? (
+            <span style={{ color: "var(--ink-soft)" }}>—</span>
+          ) : (
+            <span>
+              {outletF.toFixed(1)}
+              <span className="text-lg font-normal ml-1.5" style={{ color: "var(--ink-soft)" }}>
+                °F
+              </span>
+            </span>
+          )}
+        </div>
+        <span className="text-[11px]" style={{ color: "var(--ink-soft)", opacity: 0.75 }}>
+          Heater outlet line
+        </span>
+      </div>
+
+      <div className="md:ml-auto">
+        <Sparkline values={series} color="var(--warn)" domain={[60, 105]} width={260} height={48} />
+      </div>
+    </div>
+  );
+}
+
 function WaitingState() {
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -187,6 +261,8 @@ function HistoryTable({ readings }: { readings: DisplayReading[] }) {
               <th className="text-right px-4 py-3 font-normal text-[11px] uppercase tracking-wide">Pressure</th>
               <th className="text-right px-4 py-3 font-normal text-[11px] uppercase tracking-wide">pH</th>
               <th className="text-right px-4 py-3 font-normal text-[11px] uppercase tracking-wide">ORP</th>
+              <th className="text-right px-4 py-3 font-normal text-[11px] uppercase tracking-wide">Heater</th>
+              <th className="text-right px-4 py-3 font-normal text-[11px] uppercase tracking-wide">Outlet</th>
             </tr>
           </thead>
           <tbody>
@@ -199,6 +275,10 @@ function HistoryTable({ readings }: { readings: DisplayReading[] }) {
                 <td className="text-right px-4 py-2.5">{formatValue(r.pressure_psi, "psi")}</td>
                 <td className="text-right px-4 py-2.5">{formatValue(r.ph, "", 2)}</td>
                 <td className="text-right px-4 py-2.5">{formatValue(r.orp_mv, "mV", 0)}</td>
+                <td className="text-right px-4 py-2.5" style={{ color: r.heater_on ? "var(--ok)" : "var(--ink-soft)" }}>
+                  {r.heater_on === null || r.heater_on === undefined ? "—" : r.heater_on ? "On" : "Off"}
+                </td>
+                <td className="text-right px-4 py-2.5">{formatValue(r.heater_out_f, "°F")}</td>
               </tr>
             ))}
           </tbody>

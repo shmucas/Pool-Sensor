@@ -7,6 +7,8 @@ export type Reading = {
   pressure_psi: number | null;
   ph: number | null;
   orp_mv: number | null;
+  heater_out_f: number | null;
+  heater_on: boolean | null;
 };
 
 // A reading with its timestamp pre-formatted on the server, so the client

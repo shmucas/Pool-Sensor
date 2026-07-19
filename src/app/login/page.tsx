@@ -20,7 +20,7 @@ export default function LoginPage() {
             <span
               style={{ width: 6, height: 6, background: "var(--accent)", display: "inline-block", borderRadius: 1 }}
             />
-            Pool Sensor
+            Ferreira Pool Sensor
           </div>
           <h1 className="text-2xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-geist-sans), ui-sans-serif" }}>
             This panel is private
