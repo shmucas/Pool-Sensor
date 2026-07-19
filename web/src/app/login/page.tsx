@@ -1,30 +1,46 @@
 import { Suspense } from "react";
+import { LockDial } from "@/components/lock-dial";
 import { LoginForm } from "./login-form";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-full flex items-center justify-center px-6">
+    <div className="relative min-h-screen flex items-center justify-center px-6 py-16 overflow-hidden">
+      <div className="login-glow" />
       <div
-        className="w-full max-w-sm rounded-md border p-8 flex flex-col gap-6 items-center text-center"
-        style={{ borderColor: "var(--line)", background: "var(--panel)" }}
+        className="relative w-full max-w-[400px] rounded-lg border p-9 flex flex-col items-center gap-7 text-center"
+        style={{ borderColor: "var(--line)", background: "var(--panel)", boxShadow: "0 24px 60px -32px rgba(13, 110, 106, 0.35)" }}
       >
-        <div className="flex flex-col gap-1">
+        <LockDial />
+
+        <div className="flex flex-col gap-2">
           <div
-            className="text-xs uppercase tracking-widest"
-            style={{ color: "var(--accent)", fontFamily: "ui-monospace, monospace" }}
+            className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.3em]"
+            style={{ color: "var(--accent)", fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}
           >
+            <span
+              style={{ width: 6, height: 6, background: "var(--accent)", display: "inline-block", borderRadius: 1 }}
+            />
             Pool Sensor
           </div>
-          <h1 className="text-xl font-semibold" style={{ fontFamily: "ui-monospace, monospace" }}>
-            Sign in
+          <h1 className="text-2xl font-semibold tracking-tight" style={{ fontFamily: "var(--font-geist-sans), ui-sans-serif" }}>
+            This panel is private
           </h1>
-          <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
-            This dashboard is private. Sign in with the authorized Google account to continue.
+          <p className="text-sm leading-relaxed" style={{ color: "var(--ink-soft)" }}>
+            Sign in with an authorized Google account to view live temperature,
+            pressure, pH, and ORP readings.
           </p>
         </div>
+
         <Suspense>
           <LoginForm />
         </Suspense>
+
+        <p
+          className="text-[11px] uppercase tracking-[0.2em]"
+          style={{ color: "var(--ink-soft)", fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}
+        >
+          Access limited to verified owners
+        </p>
       </div>
     </div>
   );

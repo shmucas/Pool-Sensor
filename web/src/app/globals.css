@@ -63,3 +63,35 @@ body {
   color: var(--ink);
   font-family: ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
 }
+
+.login-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(560px circle at 50% 32%, var(--accent-soft), transparent 70%);
+}
+
+.dial-glow {
+  border-radius: 9999px;
+  background: radial-gradient(circle, var(--accent-soft), transparent 70%);
+  animation: dial-breathe 4.5s ease-in-out infinite;
+}
+
+@keyframes dial-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dial-glow {
+    animation: none;
+    opacity: 0.85;
+  }
+}

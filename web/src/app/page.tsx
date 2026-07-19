@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { supabaseServerClient } from "@/lib/supabase-server";
 import { SignOutButton } from "@/components/sign-out-button";
 
@@ -92,7 +93,12 @@ export default async function Home() {
           <h1 className="text-3xl font-semibold" style={{ fontFamily: "ui-monospace, monospace" }}>
             Live readings
           </h1>
-          <SignOutButton />
+          <div className="flex items-center gap-4">
+            <Link href="/roadmap" className="text-sm underline" style={{ color: "var(--accent)" }}>
+              Roadmap
+            </Link>
+            <SignOutButton />
+          </div>
         </div>
         <p className="text-sm" style={{ color: "var(--ink-soft)" }}>
           MVP scope: monitor only. These numbers exist to be checked against manual readings,

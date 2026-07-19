@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServerClient } from "@/lib/supabase-server";
 
-const ALLOWED_EMAILS = ["lvcaspf@gmail.com", "lucasferreira.engr@gmail.com"];
+const ALLOWED_EMAILS = [
+  "lvcaspf@gmail.com",
+  "lucasferreira.engr@gmail.com",
+  "edson.ferreira66@gmail.com",
+];
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");

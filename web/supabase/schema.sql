@@ -21,7 +21,11 @@ drop policy if exists "owner can read readings" on readings;
 create policy "owner can read readings"
   on readings for select
   to authenticated
-  using ((auth.jwt() ->> 'email') in ('lvcaspf@gmail.com', 'lucasferreira.engr@gmail.com'));
+  using ((auth.jwt() ->> 'email') in (
+    'lvcaspf@gmail.com',
+    'lucasferreira.engr@gmail.com',
+    'edson.ferreira66@gmail.com'
+  ));
 
 -- No insert/update/delete policy for anon or authenticated: writes only via
 -- the service-role key, which bypasses RLS by design.
